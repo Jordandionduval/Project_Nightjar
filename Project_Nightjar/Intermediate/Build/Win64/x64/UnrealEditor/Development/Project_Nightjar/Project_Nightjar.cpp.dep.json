@@ -1,0 +1,14 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\joe-b\\documents\\0 projects\\gamejam\\project_nightjar\\project_nightjar\\source\\project_nightjar\\project_nightjar.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\joe-b\\documents\\0 projects\\gamejam\\project_nightjar\\project_nightjar\\intermediate\\build\\win64\\x64\\project_nightjareditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.cpp20.h.pch",
+        "Includes": [
+            "c:\\users\\joe-b\\documents\\0 projects\\gamejam\\project_nightjar\\project_nightjar\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\project_nightjar\\definitions.project_nightjar.h",
+            "c:\\users\\joe-b\\documents\\0 projects\\gamejam\\project_nightjar\\project_nightjar\\source\\project_nightjar\\project_nightjar.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}
