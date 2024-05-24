@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "CharacterController.generated.h"
 #include "Camera/CameraComponent.h"
+#include "CharacterController.generated.h"
 
 UCLASS()
 class PROJECCT_NIGHTJARBP_API ACharacterController : public ACharacter
