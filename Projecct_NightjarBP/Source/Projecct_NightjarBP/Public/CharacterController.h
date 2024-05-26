@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Camera/CameraComponent.h"
@@ -60,8 +59,16 @@ private:
 	//Helper functions
 	void ResetDash();
 
+	// Camera components
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	USpringArmComponent *CameraBoom;
 
 	//Camera component 
-		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-		UCameraComponent* TopDownCameraComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UCameraComponent* TopDownCameraComponent;
+
+	// Rotation properties
+	FRotator TargetRotation;
+	float RotationSpeed;
+	FVector CurrentDirection;
 };
