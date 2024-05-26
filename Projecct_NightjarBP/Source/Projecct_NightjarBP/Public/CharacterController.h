@@ -30,7 +30,6 @@ public:
 
 public:
 	//Actions
-
 	void MoveRight(float value);
 	void MoveUp(float value);
 	void MeleeAttack();
@@ -40,24 +39,27 @@ public:
 	void Jump();
 	void StopJumping();
 
-
-
 	//Health Management
-	void TakeDamage(float damageAmount);
+	void TakeDamage(int damageAmount);
 	void Die();
 
+	//Camera
+	void RotateCharacter(float deltaTime);
+
 	//Propreties
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character, meta = (AllowPrivateAccess = "true"));
+	int Health;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character, meta = (AllowPrivateAccess = "true"));
+	int maxHealth;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"));
 	bool isGrabbingEnemy;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"));
 	AActor* GrabbedEnemy;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"));
-	float Health;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"));
-	float maxHealth;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"));
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities, meta = (AllowPrivateAccess = "true"));
 	float DashDistance;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"));
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities, meta = (AllowPrivateAccess = "true"));
 	float DashCoolDown;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"));
 	bool bCanDash;
@@ -77,7 +79,14 @@ public:
 	class UCameraComponent*TopDownCameraComponent;
 
 	// Rotation properties
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"));
+	FRotator LastRotation;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"));
 	FRotator TargetRotation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character, meta = (AllowPrivateAccess = "true"));
 	float RotationSpeed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character, meta = (AllowPrivateAccess = "true"));
+	float RotationSmoothness;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"));
 	FVector CurrentDirection;
 };

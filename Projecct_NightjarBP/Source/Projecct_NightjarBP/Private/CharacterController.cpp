@@ -26,7 +26,7 @@ ACharacterController::ACharacterController()
     GetCharacterMovement()->MaxFlySpeed = 600.0f; // Flying speed
 
     //Initialize health
-    maxHealth = 100;
+    maxHealth = 5;
     Health = maxHealth;
 
     //Initialze dash propreties
@@ -36,12 +36,19 @@ ACharacterController::ACharacterController()
     isGrabbingEnemy = false;
     GrabbedEnemy = nullptr;
 
+    //Initialize camera properties
+    RotationSpeed = 100.0f;
+    RotationSmoothness = 100.0f;
+    LastRotation = FRotator(0.0f, 0.0f, 0.0f);
+
     // Create a camera boom (pulls in towards the player if there is a collision)
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
     CameraBoom->SetupAttachment(RootComponent);
     CameraBoom->TargetArmLength = 800.0f; // The camera follows at this distance behind the character
     CameraBoom->bUsePawnControlRotation = false; // Rotate the arm based on the controller
-    CameraBoom->SetRelativeRotation(FRotator(-45.0f, 0.0f, 0.0f));
+    CameraBoom->SetUsingAbsoluteRotation(true);
+    CameraBoom->SetWorldRotation(FRotator(-45.0f, 0.0f, 0.0f));
+    //CameraBoom->SetRelativeRotation(FRotator(-45.0f, 0.0f, 0.0f));
     //Create and attach a camera component
     //TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
     //TopDownCameraComponent->SetupAttachment(RootComponent);
@@ -68,13 +75,15 @@ void ACharacterController::BeginPlay()
 void ACharacterController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+    
     // Smoothly interpolate to the target rotation if moving
-    if (!CurrentDirection.IsZero())
-    {
-        FRotator CurrentRotation = GetActorRotation();
-        FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, RotationSpeed);
-        SetActorRotation(NewRotation);
-    }
+    RotateCharacter(DeltaTime);
+    //if (!CurrentDirection.IsZero())
+    //{
+    //    FRotator CurrentRotation = GetActorRotation();
+    //    FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, RotationSpeed);
+    //    SetActorRotation(NewRotation);
+    //}
 }
 
 // Called to bind functionality to input
@@ -94,6 +103,24 @@ void ACharacterController::SetupPlayerInputComponent(UInputComponent* PlayerInpu
     PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ACharacterController::Dash);
 
 }
+
+void ACharacterController::RotateCharacter(float deltaTime) {
+    FVector velocity = GetCharacterMovement()->Velocity;
+    float speed = velocity.Length();
+
+    // If speed is 0.0f, don't update rotation.
+    // Since we get the rotation from velocity in the Z-axis, a null rotation would set up back facing forward.
+    // Instead, we save the last valid rotation and update it on tick to avoid having the character face forward on input release
+    if (speed != 0.0f && speed > RotationSmoothness) {
+        FRotator CurrentRotation = GetActorRotation();
+        FRotator SmoothRotation = FMath::RInterpTo(CurrentRotation, velocity.Rotation(), deltaTime, RotationSpeed);
+        // Updating the smooth rotation for Yaw while keeping current rotation for the other axes
+        LastRotation = FRotator(CurrentRotation.Pitch, SmoothRotation.Yaw, CurrentRotation.Roll);
+    }
+
+    SetActorRotation(LastRotation);
+}
+
 void ACharacterController::MoveRight(float value) {
     //Move character right/left relative to camera
     if (Controller && value != 0.0f)
@@ -193,10 +220,10 @@ void ACharacterController::ResetDash()
 }
 
 // Function to handle taking damage
-void ACharacterController::TakeDamage(float DamageAmount)
+void ACharacterController::TakeDamage(int DamageAmount)
 {
     Health -= DamageAmount;
-    if (Health <= 0.0f)
+    if (Health <= 0)
     {
         Die();
     }
@@ -207,7 +234,7 @@ void ACharacterController::Die()
 {
     // Placeholder for death logic, like playing a death animation and removing the character from the game
     UE_LOG(LogTemp, Warning, TEXT("Character Died!"));
-    Destroy();
+    //Destroy(); // Destroying the character would break the parent reference for the camera
 }
 
 
