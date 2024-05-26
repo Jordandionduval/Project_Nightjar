@@ -3,8 +3,9 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Camera/CameraComponent.h"
+#include "Camera/CameraComponent.h"	
 #include "CharacterController.generated.h"
+
 
 UCLASS()
 class PROJECCT_NIGHTJARBP_API ACharacterController : public ACharacter
@@ -60,12 +61,12 @@ private:
 	void ResetDash();
 
 	// Camera components
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	USpringArmComponent *CameraBoom;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"));
+	class USpringArmComponent*CameraBoom;
 
 	//Camera component 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* TopDownCameraComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"));
+	class UCameraComponent*TopDownCameraComponent;
 
 	// Rotation properties
 	FRotator TargetRotation;
