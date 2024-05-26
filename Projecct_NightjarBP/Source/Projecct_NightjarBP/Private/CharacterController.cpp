@@ -46,7 +46,8 @@ ACharacterController::ACharacterController()
     CameraBoom->SetupAttachment(RootComponent);
     CameraBoom->TargetArmLength = 800.0f; // The camera follows at this distance behind the character
     CameraBoom->bUsePawnControlRotation = false; // Rotate the arm based on the controller
-    CameraBoom->SetUsingAbsoluteRotation(true);
+    CameraBoom->bDoCollisionTest = false; // Otherwise, characters behind us fling the camera forward
+    CameraBoom->SetUsingAbsoluteRotation(true); // Enable to avoid camera rotating with character
     CameraBoom->SetWorldRotation(FRotator(-45.0f, 0.0f, 0.0f));
     //CameraBoom->SetRelativeRotation(FRotator(-45.0f, 0.0f, 0.0f));
     //Create and attach a camera component
