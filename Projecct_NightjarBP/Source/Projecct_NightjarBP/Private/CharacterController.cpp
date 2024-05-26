@@ -5,9 +5,11 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/PlayerController.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "TimerManager.h"
 #include "Camera/CameraComponent.h"
+
 // Sets default values
 ACharacterController::ACharacterController()
 {
@@ -34,13 +36,25 @@ ACharacterController::ACharacterController()
     isGrabbingEnemy = false;
     GrabbedEnemy = nullptr;
 
-
+    // Create a camera boom (pulls in towards the player if there is a collision)
+    CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+    CameraBoom->SetupAttachment(RootComponent);
+    CameraBoom->TargetArmLength = 800.0f; // The camera follows at this distance behind the character
+    CameraBoom->bUsePawnControlRotation = false; // Rotate the arm based on the controller
+    CameraBoom->SetRelativeRotation(FRotator(-45.0f, 0.0f, 0.0f));
     //Create and attach a camera component
-    TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
-    TopDownCameraComponent->SetupAttachment(RootComponent);
-    TopDownCameraComponent->SetRelativeLocation(FVector(-500.0f, 0.0f, 800.0f));
-    TopDownCameraComponent->SetRelativeRotation(FRotator(-60.0f, 0.0f, 0.0f));
-    TopDownCameraComponent->bUsePawnControlRotation = false;
+    //TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
+    //TopDownCameraComponent->SetupAttachment(RootComponent);
+    //TopDownCameraComponent->SetRelativeLocation(FVector(-500.0f, 0.0f, 800.0f));
+    //TopDownCameraComponent->SetRelativeRotation(FRotator(-60.0f, 0.0f, 0.0f));
+    //TopDownCameraComponent->bUsePawnControlRotation = false;
+
+
+
+    // Create a camera and attach to boom
+    TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+    TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+    TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 }
 
 // Called when the game starts or when spawned
@@ -54,7 +68,13 @@ void ACharacterController::BeginPlay()
 void ACharacterController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+    // Smoothly interpolate to the target rotation if moving
+    if (!CurrentDirection.IsZero())
+    {
+        FRotator CurrentRotation = GetActorRotation();
+        FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, RotationSpeed);
+        SetActorRotation(NewRotation);
+    }
 }
 
 // Called to bind functionality to input
@@ -76,14 +96,40 @@ void ACharacterController::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 }
 void ACharacterController::MoveRight(float value) {
     //Move character right/left relative to camera
-    AddMovementInput(FVector(0.0f, 1.0f, 0.0f), value);
+    if (Controller && value != 0.0f)
+    {
+        // Move the character
+        CurrentDirection.Y = value;
+        AddMovementInput(FVector::RightVector, value);
+
+        // Determine the target rotation based on the input direction
+        TargetRotation = value > 0.0f ? FRotator(0.0f, 90.0f, 0.0f) : FRotator(0.0f, -90.0f, 0.0f);
+    }
+    else
+    {
+        // Stop moving in the Y direction if no input
+        CurrentDirection.Y = 0.0f;
+    }
 }
 
 void ACharacterController::MoveUp(float value) {
     
-    //Move Character up/down relative to camera
-    AddMovementInput(FVector(1.0f, 0.0f, 0.0f), value);
+    if (Controller && value != 0.0f)
+    {
+        // Move the character
+        CurrentDirection.X = value;
+        AddMovementInput(FVector::ForwardVector, value);
+
+        // Determine the target rotation based on the input direction
+        TargetRotation = value > 0.0f ? FRotator(0.0f, 0.0f, 0.0f) : FRotator(0.0f, 180.0f, 0.0f);
+    }
+    else
+    {
+        // Stop moving in the X direction if no input
+        CurrentDirection.X = 0.0f;
+    }
 }
+
 void ACharacterController::MeleeAttack() {
     
     UE_LOG(LogTemp, Warning, TEXT("MELEE ATTACK"));
