@@ -80,12 +80,6 @@ void ACharacterController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
     // Smoothly interpolate to the target rotation if moving
     RotateCharacter(DeltaTime);
-    //if (!CurrentDirection.IsZero())
-    //{
-    //    FRotator CurrentRotation = GetActorRotation();
-    //    FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, _DeltaTime, RotationSpeed);
-    //    SetActorRotation(NewRotation);
-    //}
 }
 
 // Called to bind functionality to input
@@ -125,7 +119,7 @@ void ACharacterController::RotateCharacter(float DeltaTime) {
 
 void ACharacterController::MoveRight(float value) {
     //Move character right/left relative to camera
-    if (Controller && value != 0.0f)
+    if (Controller && value != 0.0f && Health != 0)
     {
         // Move the character
         CurrentDirection.Y = value;
@@ -142,8 +136,8 @@ void ACharacterController::MoveRight(float value) {
 }
 
 void ACharacterController::MoveUp(float value) {
-    
-    if (Controller && value != 0.0f)
+    //Move character up/down relative to camera
+    if (Controller && value != 0.0f && Health != 0)
     {
         // Move the character
         CurrentDirection.X = value;
