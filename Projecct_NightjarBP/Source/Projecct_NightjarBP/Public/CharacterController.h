@@ -44,7 +44,7 @@ public:
 	void Die();
 
 	//Camera
-	void RotateCharacter(float deltaTime);
+	void RotateCharacter(float DeltaTime);
 
 	//Propreties
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character, meta = (AllowPrivateAccess = "true"));
