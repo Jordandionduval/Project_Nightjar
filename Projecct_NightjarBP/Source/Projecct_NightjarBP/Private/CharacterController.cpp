@@ -33,6 +33,8 @@ ACharacterController::ACharacterController()
     DashDistance = 600.0f;
     DashCoolDown = 1.0f;
     bCanDash = true;
+
+    //Initialize grab properties
     isGrabbingEnemy = false;
     GrabbedEnemy = nullptr;
 
@@ -76,13 +78,12 @@ void ACharacterController::BeginPlay()
 void ACharacterController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-    
     // Smoothly interpolate to the target rotation if moving
     RotateCharacter(DeltaTime);
     //if (!CurrentDirection.IsZero())
     //{
     //    FRotator CurrentRotation = GetActorRotation();
-    //    FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, RotationSpeed);
+    //    FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, _DeltaTime, RotationSpeed);
     //    SetActorRotation(NewRotation);
     //}
 }
@@ -105,7 +106,7 @@ void ACharacterController::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 }
 
-void ACharacterController::RotateCharacter(float deltaTime) {
+void ACharacterController::RotateCharacter(float DeltaTime) {
     FVector velocity = GetCharacterMovement()->Velocity;
     float speed = velocity.Length();
 
@@ -114,7 +115,7 @@ void ACharacterController::RotateCharacter(float deltaTime) {
     // Instead, we save the last valid rotation and update it on tick to avoid having the character face forward on input release
     if (speed != 0.0f && speed > RotationSmoothness) {
         FRotator CurrentRotation = GetActorRotation();
-        FRotator SmoothRotation = FMath::RInterpTo(CurrentRotation, velocity.Rotation(), deltaTime, RotationSpeed);
+        FRotator SmoothRotation = FMath::RInterpTo(CurrentRotation, velocity.Rotation(), DeltaTime, RotationSpeed);
         // Updating the smooth rotation for Yaw while keeping current rotation for the other axes
         LastRotation = FRotator(CurrentRotation.Pitch, SmoothRotation.Yaw, CurrentRotation.Roll);
     }
